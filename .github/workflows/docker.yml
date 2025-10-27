@@ -1,0 +1,63 @@
+# 工作流的名称
+name: Build and Push Docker Image
+
+# 触发条件：当代码被推送到 main 分支时，自动触发此工作流
+on:
+  push:
+    branches:
+      - main
+
+# 定义一个 job（任务）
+jobs:
+  # 任务名称
+  build-and-push:
+    # 运行环境：使用最新版的 Ubuntu 虚拟机
+    runs-on: ubuntu-latest
+
+    # 设置权限，这是推送到 ghcr.io (GitHub Container Registry) 必需的
+    permissions:
+      contents: read      # 读取仓库内容
+      packages: write     # 写入包（推送镜像）
+
+    # 任务包含的步骤
+    steps:
+      # 步骤 1: 检出代码
+      # 使用官方的 checkout action，将仓库代码下载到运行环境中
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 步骤 2: 设置 Docker Buildx
+      # Buildx 是 Docker 的增强构建工具，支持缓存等功能，推荐使用
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 步骤 3: 登录到 GitHub Container Registry
+      # 使用 GitHub 自动提供的 GITHUB_TOKEN 进行认证，无需手动创建 Secret
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io # GitHub Container Registry 的地址
+          username: ${{ github.actor }} # 用户名是触发此次操作的用户
+          password: ${{ secrets.GITHUB_TOKEN }} # 密码是 GitHub 自动生成的临时 Token
+
+      # 步骤 4: 提取元数据（标签）
+      # 这个 action 会自动为我们生成符合规范的镜像标签，例如 latest 和 git commit SHA
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }} # 镜像的名称，格式为 ghcr.io/用户名/仓�名
+          tags: |
+            type=ref,event=branch # 为分支打标签，例如 main -> main
+            type=sha,prefix={{branch}}- # 为 commit SHA 打标签，例如 main-a1b2c3d
+
+      # 步骤 5: 构建并推送 Docker 镜像
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: . # 构建上下文，. 代表当前目录，和你手动执行 docker build 一样
+          push: true # 设置为 true 表示构建完成后要推送到 registry
+          tags: ${{ steps.meta.outputs.tags }} # 使用上一步生成的标签
+          labels: ${{ steps.meta.outputs.labels }} # 使用上一步生成的标签
+          cache-from: type=gha # 启用缓存，可以加速后续构建
+          cache-to: type=gha,mode=max
