@@ -15,6 +15,7 @@ jobs:
   build-and-push:
     # 运行环境：使用最新版的 Ubuntu 虚拟机
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     # 设置权限，这是推送到 ghcr.io (GitHub Container Registry) 必需的
     permissions:
