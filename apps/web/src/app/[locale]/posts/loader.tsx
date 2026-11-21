@@ -12,6 +12,7 @@ import { PostItemComposer } from '~/components/modules/post/PostItemComposer'
 import { LoadMoreIndicator } from '~/components/modules/shared/LoadMoreIndicator'
 import { Loading } from '~/components/ui/loading'
 import { apiClient } from '~/lib/request'
+import { paginateOf } from '~/types/api-compat'
 
 export const PostLoadMore: FC<{ pagination: Pager }> = ({ pagination }) => {
   const initialPageParam = pagination
@@ -41,10 +42,10 @@ export const PostLoadMore: FC<{ pagination: Pager }> = ({ pagination }) => {
       })
     },
     initialPageParam: initialPageParam.page + 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.pagination.hasNextPage
-        ? lastPage.pagination.page + 1
-        : undefined,
+    getNextPageParam: (lastPage) => {
+      const { pagination } = paginateOf(lastPage)
+      return pagination.hasNextPage ? pagination.page + 1 : undefined
+    },
     enabled: !!initialPageParam.hasNextPage,
   })
 

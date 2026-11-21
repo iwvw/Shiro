@@ -14,6 +14,7 @@ import { TrackerAction } from '~/constants/tracker'
 import { usePageIsActive } from '~/hooks/common/use-is-active'
 import { apiClient } from '~/lib/request'
 import { routeBuilder, Routes } from '~/lib/route-builder'
+import { dataOf } from '~/types/api-compat'
 
 const Help = () => {
   const t = useTranslations('gateway')
@@ -121,7 +122,10 @@ const RoomsInfo = () => {
     queryFn: async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000))
       const res = await apiClient.activity.getRoomsInfo()
-      const data = res.$serialized
+      const data = dataOf<{
+        objects: { notes: any[]; posts: any[]; pages: any[] }
+        roomCount: Record<string, number>
+      }>(res)
       const result = [] as {
         path: string
         title: string

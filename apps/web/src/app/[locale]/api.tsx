@@ -16,17 +16,22 @@ export const fetchAggregationData = async () => {
   await attachServerFetch()
   const queryClient = getQueryClient()
   const fetcher = async () => {
-    const data = (await $fetch<
-      AggregateRoot & {
+    const res = (await $fetch<{
+      data: AggregateRoot & {
         theme: AppThemeConfig
       }
-    >(apiClient.aggregate.proxy.toString(true), {
+    }>(apiClient.aggregate.proxy.toString(true), {
       params: {
         theme: 'shiro',
       },
-    }).then(simpleCamelcaseKeys)) as AggregateRoot & {
-      theme: AppThemeConfig
+    }).then(simpleCamelcaseKeys)) as {
+      data: AggregateRoot & {
+        theme: AppThemeConfig
+      }
     }
+
+    // v3 响应统一包在 { data } 信封里
+    const {data} = res
 
     return {
       ...data,

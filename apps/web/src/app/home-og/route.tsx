@@ -1,7 +1,9 @@
+import type { AggregateRoot } from '@mx-space/api-client'
 import { ImageResponse } from 'next/og'
 import type { ImageResponseOptions } from 'next/server'
 
 import { apiClient } from '~/lib/request'
+import { dataOf } from '~/types/api-compat'
 
 export const revalidate = 86400 // 24 hours
 
@@ -27,7 +29,7 @@ export const GET = async () => {
     seo,
     user: { avatar },
     theme,
-  } = aggregateData.$serialized
+  } = dataOf<AggregateRoot & { theme?: AppThemeConfig }>(aggregateData)
   const ogAvatar =
     (theme as AppThemeConfig | undefined)?.config.module?.og?.avatar || avatar
 

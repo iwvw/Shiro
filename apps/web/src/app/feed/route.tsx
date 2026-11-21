@@ -1,4 +1,4 @@
-import type { Image } from '@mx-space/api-client'
+import type { AggregateRoot,Image  } from '@mx-space/api-client'
 import type { MarkdownToJSX } from 'markdown-to-jsx'
 import { compiler, RuleType } from 'markdown-to-jsx'
 import RSS from 'rss'
@@ -11,6 +11,7 @@ import { MentionRule } from '~/components/ui/markdown/parsers/mention'
 import { SpoilerRule } from '~/components/ui/markdown/parsers/spoiler'
 import { get } from '~/lib/lodash'
 import { apiClient } from '~/lib/request'
+import { dataOf } from '~/types/api-compat'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 60
@@ -34,19 +35,23 @@ interface RSSProps {
 export async function GET() {
   const ReactDOM = (await import('react-dom/server')).default
 
-  const [{ author, data, url }, agg] = await Promise.all([
+  const [feedRes, aggRes] = await Promise.all([
     apiClient.aggregate.proxy.feed.get<RSSProps>(),
     apiClient.aggregate.getAggregateData<AppThemeConfig>('shiro'),
   ])
 
+  const { author, data, url } = dataOf<RSSProps>(feedRes)
+  const agg = dataOf<AggregateRoot & { theme?: AppConfig }>(aggRes)
+
   const { title, description } = agg.seo
 
   const now = new Date()
+  const themeConfig = agg.theme as any
   const custom_elements = get(
-    agg.$raw.theme as AppConfig,
+    themeConfig ?? {},
     'config.module.rss.custom_elements',
   )
-  const noRSS = get(agg.$raw.theme as AppConfig, 'config.module.rss.noRSS')
+  const noRSS = get(themeConfig ?? {}, 'config.module.rss.noRSS')
 
   const followChallengeIndex = custom_elements
     ? custom_elements.findIndex((item: any) => item.follow_challenge)
@@ -69,9 +74,8 @@ export async function GET() {
     ]
   }
 
-  const imageUrl = agg.theme?.config?.site?.favicon.startsWith('/')
-    ? `${url}${agg.theme?.config?.site?.favicon}`
-    : agg.theme?.config?.site?.favicon
+  const favicon: string | undefined = themeConfig?.config?.site?.favicon
+  const imageUrl = favicon?.startsWith('/') ? `${url}${favicon}` : favicon
 
   const feed = new RSS({
     title,

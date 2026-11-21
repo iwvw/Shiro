@@ -5,6 +5,7 @@ import { createElement, useCallback } from 'react'
 
 import { useModalStack } from '~/components/ui/modal'
 import { apiClient } from '~/lib/request'
+import { paginateOf } from '~/types/api-compat'
 
 import { SayModalForm } from './SayModalForm'
 
@@ -18,10 +19,10 @@ export const useSayListQuery = () =>
       return data
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.pagination.hasNextPage
-        ? lastPage.pagination.page + 1
-        : undefined,
+    getNextPageParam: (lastPage) => {
+      const { pagination } = paginateOf(lastPage)
+      return pagination.hasNextPage ? pagination.page + 1 : undefined
+    },
   })
 
 export const useSayModal = () => {

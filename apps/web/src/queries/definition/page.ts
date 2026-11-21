@@ -1,4 +1,7 @@
+import type { PageModel } from '@mx-space/api-client'
+
 import { apiClient } from '~/lib/request'
+import { dataOf } from '~/types/api-compat'
 
 import { defineQuery } from '../helper'
 
@@ -14,7 +17,7 @@ export const page = {
           prefer: 'lexical',
         })
 
-        return data.$serialized
+        return dataOf<PageModel>(data)
       },
     }),
 }

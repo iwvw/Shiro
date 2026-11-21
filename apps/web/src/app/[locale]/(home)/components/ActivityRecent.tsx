@@ -9,6 +9,7 @@ import { useMemo } from 'react'
 import { ScrollArea } from '~/components/ui/scroll-area'
 import { softBouncePreset } from '~/constants/spring'
 import { apiClient } from '~/lib/request'
+import { dataOf } from '~/types/api-compat'
 
 import { ActivityCard, iconClassName } from './ActivityCard'
 import type { ReactActivityType } from './types'
@@ -18,7 +19,9 @@ export const ActivityRecent = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['home-activity-recent'],
     queryFn: async () =>
-      (await apiClient.activity.getRecentActivities()).$serialized,
+      dataOf<Record<string, any>>(
+        await apiClient.activity.getRecentActivities(),
+      ),
     refetchOnMount: true,
     meta: {
       persist: true,

@@ -1,5 +1,6 @@
 import '~/components/modules/post/PostItem'
 
+import type { PostModel } from '@mx-space/api-client'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
@@ -14,6 +15,7 @@ import { BackToTopFAB } from '~/components/ui/fab'
 import { OnlyDesktop } from '~/components/ui/viewport'
 import { apiClient } from '~/lib/request'
 import { definePrerenderPage } from '~/lib/request.server'
+import { paginateOf } from '~/types/api-compat'
 
 import { PostListDataRevaildate } from './data-revalidate'
 import { PostLoadMore } from './loader'
@@ -59,7 +61,7 @@ export default definePrerenderPage<Props>()({
   },
   Component: async (props) => {
     const { params, fetchedAt } = props
-    const { data, pagination } = props.data
+    const { data, pagination } = paginateOf<PostModel>(props.data)
     const { page } = params
 
     const currentPage = page ? Number.parseInt(page) : 1

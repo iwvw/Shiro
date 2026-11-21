@@ -9,19 +9,18 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 86400 // 1 day
 
 export async function GET() {
-  const [agg, thinking] = await Promise.all([
+  const [aggRaw, thinking] = await Promise.all([
     fetch(apiClient.aggregate.proxy.toString(true), {
       next: {
         revalidate: 86400,
       },
-    }).then(
-      async (res) =>
-        simpleCamelcaseKeys(await res.json()) as Promise<AggregateRoot>,
-    ),
+    }).then(async (res) => simpleCamelcaseKeys(await res.json()) as unknown),
     apiClient.recently.getList({
       size: 20,
     }),
   ])
+
+  const agg = dataOf<AggregateRoot>(aggRaw)
 
   const { title, description } = agg.seo
 

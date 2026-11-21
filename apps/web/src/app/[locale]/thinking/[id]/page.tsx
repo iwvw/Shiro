@@ -1,9 +1,11 @@
+import type { RecentlyModel } from '@mx-space/api-client'
 import { Suspense } from 'react'
 
 import { CommentBoxRootLazy, CommentsLazy } from '~/components/modules/comment'
 import { MotionButtonBase } from '~/components/ui/button'
 import { Link } from '~/i18n/navigation'
 import { apiClient } from '~/lib/request'
+import { dataOf } from '~/types/api-compat'
 
 import { ThinkingItem } from '../item'
 
@@ -13,7 +15,8 @@ export default async function Page(props: {
   }>
 }) {
   const params = await props.params
-  const data = await apiClient.recently.getById(params.id)
+  const res = await apiClient.recently.getById(params.id)
+  const item = dataOf<RecentlyModel>(res)
 
   return (
     <div>
@@ -45,12 +48,12 @@ export default async function Page(props: {
             返回
           </Link>
         </MotionButtonBase>
-        <ThinkingItem item={data.$serialized} />
+        <ThinkingItem item={item} />
 
-        {data.allowComment && (
+        {item.allowComment && (
           <Suspense>
-            <CommentBoxRootLazy className="mb-12 mt-6" refId={data.id} />
-            <CommentsLazy refId={data.id} />
+            <CommentBoxRootLazy className="mb-12 mt-6" refId={item.id} />
+            <CommentsLazy refId={item.id} />
           </Suspense>
         )}
       </main>

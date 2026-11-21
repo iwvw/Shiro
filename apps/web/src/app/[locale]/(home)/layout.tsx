@@ -1,3 +1,4 @@
+import type { AggregateTop } from '@mx-space/api-client'
 import { dehydrate } from '@tanstack/react-query'
 
 import { QueryHydrate } from '~/components/common/QueryHydrate'
@@ -5,6 +6,7 @@ import { isShallowEqualArray } from '~/lib/lodash'
 import { getQueryClient } from '~/lib/query-client.server'
 import { apiClient } from '~/lib/request'
 import { definePrerenderPage, requestErrorHandler } from '~/lib/request.server'
+import { dataOf } from '~/types/api-compat'
 
 import { ActivityScreen } from './components/ActivityScreen'
 import { Hero } from './components/Hero'
@@ -21,7 +23,8 @@ export default definePrerenderPage()({
     return queryClient
       .fetchQuery({
         queryKey,
-        queryFn: async () => (await apiClient.aggregate.getTop(5)).$serialized,
+        queryFn: async () =>
+          dataOf<AggregateTop>(await apiClient.aggregate.getTop(5)),
       })
       .catch(requestErrorHandler)
   },

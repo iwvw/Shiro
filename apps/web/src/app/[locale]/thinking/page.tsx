@@ -20,6 +20,7 @@ import { Loading } from '~/components/ui/loading'
 import { usePrevious } from '~/hooks/common/use-previous'
 import { preventDefault } from '~/lib/dom'
 import { apiClient } from '~/lib/request'
+import { dataOf } from '~/types/api-compat'
 
 import { FETCH_SIZE, QUERY_KEY } from './constants'
 import { ThinkingItem } from './item'
@@ -73,7 +74,7 @@ const PostBox = () => {
             >
           >(QUERY_KEY, (old) =>
             produce(old, (draft) => {
-              draft?.pages[0].unshift(res.$serialized as any)
+              draft?.pages[0].unshift(dataOf<RecentlyModel>(res) as any)
               return draft
             }),
           )
@@ -118,10 +119,12 @@ const List = () => {
   const { data, isLoading, fetchNextPage } = useInfiniteQuery({
     queryKey: QUERY_KEY,
     queryFn: async ({ pageParam }) => {
-      const data = await apiClient.shorthand.getList({
-        before: pageParam,
-        size: FETCH_SIZE,
-      })
+      const data = dataOf<RecentlyModel[]>(
+        await apiClient.shorthand.getList({
+          before: pageParam,
+          size: FETCH_SIZE,
+        }),
+      )
 
       if (data.length < FETCH_SIZE) {
         setHasNext(false)

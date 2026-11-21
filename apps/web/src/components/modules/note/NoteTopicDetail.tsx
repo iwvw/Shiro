@@ -115,7 +115,9 @@ export const NoteTopicDetail: FC<{ topic: TopicModel }> = (props) => {
           <p className="flex items-center">
             <MdiFountainPenTip />
             <DividerVertical />
-            {t('topic_total_articles', { total: data?.pagination?.total ?? 0 })}
+            {t('topic_total_articles', {
+              total: (data as any)?.meta?.pagination?.total ?? 0,
+            })}
           </p>
         </>
       )}

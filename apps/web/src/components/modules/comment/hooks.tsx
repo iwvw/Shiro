@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 
 import { apiClient } from '~/lib/request'
 import { buildCommentsQueryKey } from '~/queries/keys'
+import { paginateOf } from '~/types/api-compat'
 
 export function useCommentsQuery(refId: string) {
   const key = useMemo(() => buildCommentsQueryKey(refId), [refId])
@@ -21,11 +22,11 @@ export function useCommentsQuery(refId: string) {
     meta: {
       persist: false,
     },
-    getNextPageParam: (lastPage) =>
-      lastPage.pagination.hasNextPage
-        ? lastPage.pagination.page + 1
-        : undefined,
-    getPreviousPageParam: (firstPage) => firstPage.pagination.page - 1,
+    getNextPageParam: (lastPage) => {
+      const { pagination } = paginateOf(lastPage)
+      return pagination.hasNextPage ? pagination.page + 1 : undefined
+    },
+    getPreviousPageParam: (firstPage) => paginateOf(firstPage).pagination.page - 1,
     initialPageParam: 1 as number | undefined,
   })
 

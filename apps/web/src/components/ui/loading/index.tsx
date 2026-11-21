@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { useEffect, useMemo, useState } from 'react'
 
 import { clsxm } from '~/lib/helper'
 
@@ -15,7 +16,18 @@ export const Loading: Component<LoadingProps> = ({
   useDefaultLoadingText = false,
 }) => {
   const t = useTranslations('common')
-  const defaultLoadingText = t('loading_default')
+  const defaultLoadingTexts = useMemo(() => {
+    const raw = t.raw('loading_default') as unknown
+    return Array.isArray(raw) ? (raw as string[]) : [raw as string]
+  }, [t])
+  // 服务端与首次客户端渲染都用第 0 条,避免 hydration 不一致
+  const [textIndex, setTextIndex] = useState(0)
+  useEffect(() => {
+    if (defaultLoadingTexts.length > 1) {
+      setTextIndex(Math.floor(Math.random() * defaultLoadingTexts.length))
+    }
+  }, [defaultLoadingTexts.length])
+  const defaultLoadingText = defaultLoadingTexts[textIndex]
   const nextLoadingText = useDefaultLoadingText
     ? defaultLoadingText
     : loadingText

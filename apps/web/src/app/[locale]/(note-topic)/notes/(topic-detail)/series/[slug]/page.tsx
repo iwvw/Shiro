@@ -16,6 +16,7 @@ import { Link } from '~/i18n/navigation'
 import { apiClient } from '~/lib/request'
 import { routeBuilder, Routes } from '~/lib/route-builder'
 import type { NoteTopicListItem } from '~/types/api-compat'
+import { paginateOf } from '~/types/api-compat'
 
 import { getTopicQuery } from './query'
 
@@ -51,10 +52,10 @@ export default function Page() {
     },
     initialPageParam: 1,
 
-    getNextPageParam: (lastPage) =>
-      lastPage.pagination.hasNextPage
-        ? lastPage.pagination.page + 1
-        : undefined,
+    getNextPageParam: (lastPage) => {
+      const { pagination } = paginateOf(lastPage)
+      return pagination.hasNextPage ? pagination.page + 1 : undefined
+    },
   })
   if (!data) throw new Error('topic data is lost :(')
   const { name } = data

@@ -2,6 +2,7 @@ import type { PostModel } from '@mx-space/api-client'
 
 import { apiClient } from '~/lib/request'
 import type { ModelWithLiked, ModelWithTranslation } from '~/types/api-compat'
+import { dataOf } from '~/types/api-compat'
 
 import { defineQuery } from '../helper'
 
@@ -27,7 +28,7 @@ export const post = {
           prefer: 'lexical',
         })
 
-        return data.$serialized as PostWithTranslation
+        return dataOf<PostWithTranslation>(data)
       },
     }),
 }
