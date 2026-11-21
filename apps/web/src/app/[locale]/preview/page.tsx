@@ -1,13 +1,6 @@
 'use client'
 
-import type {
-  ModelWithLiked,
-  ModelWithTranslation,
-  NoteModel,
-  NoteWrappedWithLikedAndTranslationPayload,
-  PageModel,
-  PostModel,
-} from '@mx-space/api-client'
+import type { NoteModel, PageModel, PostModel } from '@mx-space/api-client'
 import { simpleCamelcaseKeys } from '@mx-space/api-client'
 import { clsx } from 'clsx'
 import { useIsomorphicLayoutEffect } from 'foxact/use-isomorphic-layout-effect'
@@ -39,6 +32,11 @@ import {
   LayoutRightSideProvider,
 } from '~/providers/shared/LayoutRightSideProvider'
 import { WrappedElementProvider } from '~/providers/shared/WrappedElementProvider'
+import type {
+  ModelWithLiked,
+  ModelWithTranslation,
+  NoteWrappedPayload,
+} from '~/types/api-compat'
 
 import {
   MarkdownImageRecordProviderInternal,
@@ -203,12 +201,7 @@ const PostPreview = () => {
       <CurrentPostDataAtomProvider overrideAtom={overrideAtom}>
         <CurrentPostDataProvider data={data} />
         <div className="relative flex min-h-[120px] grid-cols-[auto_200px] lg:grid">
-          <article
-            className={clsx(
-              'relative w-full min-w-0',
-               'prose',
-            )}
-          >
+          <article className={clsx('relative w-full min-w-0', 'prose')}>
             <header className="mb-8">
               <h1 className="text-balance text-center">{data.title}</h1>
 
@@ -237,10 +230,7 @@ const PostPreview = () => {
 const NotePreview = () => {
   const rawData = useAtomValue(previewDataAtom) as NoteModel
 
-  const overrideAtom = useMemo(
-    () => atom(null! as NoteWrappedWithLikedAndTranslationPayload),
-    [],
-  )
+  const overrideAtom = useMemo(() => atom(null! as NoteWrappedPayload), [])
   const data = useMemo(
     () =>
       ({
@@ -257,7 +247,7 @@ const NotePreview = () => {
           isTranslated: false,
           liked: false,
         },
-      }) as NoteWrappedWithLikedAndTranslationPayload,
+      }) as NoteWrappedPayload,
     [rawData],
   )
   return (
@@ -304,9 +294,7 @@ const PagePreview = () => {
       <CurrentPageDataAtomProvider overrideAtom={overrideAtom}>
         <CurrentPageDataProvider data={data} />
         <div className="relative w-full min-w-0">
-          <article
-            className={'prose'}
-          >
+          <article className={'prose'}>
             <header className="mb-8">
               <PageTitle />
 

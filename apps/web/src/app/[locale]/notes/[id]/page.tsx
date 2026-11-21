@@ -1,10 +1,6 @@
 import './page.css'
 
-import type {
-  ModelWithLiked,
-  ModelWithTranslation,
-  NoteModel,
-} from '@mx-space/api-client'
+import type { NoteModel } from '@mx-space/api-client'
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
@@ -46,6 +42,7 @@ import {
 import { CurrentNoteNidProvider } from '~/providers/note/CurrentNoteIdProvider'
 import { LayoutRightSidePortal } from '~/providers/shared/LayoutRightSideProvider'
 import { WrappedElementProvider } from '~/providers/shared/WrappedElementProvider'
+import type { ModelWithLiked, ModelWithTranslation } from '~/types/api-compat'
 
 import { Paper } from '../../../../components/layout/container/Paper'
 import { NoteHeadCover } from '../../../../components/modules/note/NoteHeadCover'
@@ -244,7 +241,7 @@ export default definePrerenderPage<NoteDetailPageParams>()<NoteDataResult>({
           <BottomToUpSoftScaleTransitionView delay={500}>
             <CommentAreaRootLazy
               refId={data.data.id}
-              allowComment={data.data.allowComment}
+              allowComment={data.data.allowComment ?? true}
             />
           </BottomToUpSoftScaleTransitionView>
         </Transition>

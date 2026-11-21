@@ -33,7 +33,7 @@ export const CommentModal: ModalContentComponent<CommentModalProps> = (
 
       {anchor && anchor.mode === 'block' && (
         <div className="my-3 text-sm text-neutral-7">
-          <span>{`评论了「${anchor.snapshotText.slice(0, 60)}${anchor.snapshotText.length > 60 ? '…' : ''}」`}</span>
+          <span>{`评论了「${(anchor.snapshotText ?? '').slice(0, 60)}${(anchor.snapshotText ?? '').length > 60 ? '…' : ''}」`}</span>
         </div>
       )}
 

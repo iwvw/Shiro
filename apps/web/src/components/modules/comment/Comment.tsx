@@ -78,7 +78,7 @@ const CommentRender: Component<{
 
     return isSingleLine && isURL
   }, [comment.text])
-  const reader = useCommentReader(comment.readerId)
+  const reader = useCommentReader(comment.readerId ?? undefined)
 
   const {
     id: cid,
@@ -138,7 +138,7 @@ const CommentRender: Component<{
         <div className="mb-1.5 text-xs text-neutral-400 dark:text-neutral-500">
           <span>
             {t('commented_on_block', {
-              text: `${anchor.snapshotText.slice(0, 40)}${anchor.snapshotText.length > 40 ? '…' : ''}`,
+              text: `${(anchor.snapshotText ?? '').slice(0, 40)}${(anchor.snapshotText ?? '').length > 40 ? '…' : ''}`,
             })}
           </span>
         </div>
@@ -186,7 +186,7 @@ const CommentRender: Component<{
               <Avatar
                 alt={t('avatar_alt', { author })}
                 className="size-6 select-none rounded-full bg-neutral-200 ring-2 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-800 md:size-9"
-                imageUrl={avatar}
+                imageUrl={avatar ?? undefined}
                 shadow={false}
               />
               {source &&
@@ -218,7 +218,7 @@ const CommentRender: Component<{
                   {authorElement}
                   <span className="-mt-1 flex min-w-0 shrink select-none flex-wrap items-center space-x-2 md:mt-0 md:self-end">
                     <span className="inline-flex shrink-0 text-[0.71rem] font-medium opacity-40">
-                      <RelativeTime date={comment.created} />
+                      <RelativeTime date={comment.createdAt} />
                     </span>
                     {!!location && (
                       <span className="min-w-0 max-w-full truncate break-all text-[0.71rem] opacity-35">
@@ -307,7 +307,7 @@ const LoadMoreRepliesButton: FC<{
           if (!oldData) return oldData
           return mergeThreadRepliesIntoPages(oldData, {
             rootCommentId: comment.id,
-            replies: result.replies,
+            replies: result.replies as unknown as CommentWithAnchor[],
             replyWindow,
           })
         },

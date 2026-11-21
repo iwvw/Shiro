@@ -1,6 +1,6 @@
 'use client'
 
-import type { NoteTopicListItem, PaginateResult } from '@mx-space/api-client'
+import type { PaginateResult } from '@mx-space/api-client'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
@@ -15,6 +15,7 @@ import {
 import { Link } from '~/i18n/navigation'
 import { apiClient } from '~/lib/request'
 import { routeBuilder, Routes } from '~/lib/route-builder'
+import type { NoteTopicListItem } from '~/types/api-compat'
 
 import { getTopicQuery } from './query'
 
@@ -52,7 +53,7 @@ export default function Page() {
 
     getNextPageParam: (lastPage) =>
       lastPage.pagination.hasNextPage
-        ? lastPage.pagination.currentPage + 1
+        ? lastPage.pagination.page + 1
         : undefined,
   })
   if (!data) throw new Error('topic data is lost :(')
@@ -69,7 +70,7 @@ export default function Page() {
         <TimelineList>
           {notes?.pages.map((page) =>
             page.data.map((child, i) => {
-              const date = new Date(child.created)
+              const date = new Date(child.createdAt)
 
               return (
                 <BottomToUpTransitionView

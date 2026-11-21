@@ -1,5 +1,6 @@
 'use client'
 
+import type { ProjectModel } from '@mx-space/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 
@@ -11,6 +12,7 @@ import { BottomToUpTransitionView } from '~/components/ui/transition'
 import { noopArr } from '~/lib/noop'
 import { apiClient } from '~/lib/request'
 import { useAggregationSelector } from '~/providers/root/aggregation-data-provider'
+import { dataOf } from '~/types/api-compat'
 
 export default function Page() {
   const t = useTranslations('projects')
@@ -18,8 +20,8 @@ export default function Page() {
   const { data, isLoading } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
-      const data = await apiClient.project.getAll()
-      return data.data
+      const data = dataOf<ProjectModel[]>(await apiClient.project.getAll())
+      return data
     },
   })
 

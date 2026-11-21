@@ -1,6 +1,5 @@
-import type { NoteWrappedWithLikedAndTranslationPayload } from '@mx-space/api-client'
-
 import { apiClient } from '~/lib/request'
+import type { NoteWrappedPayload } from '~/types/api-compat'
 
 import { defineQuery } from '../helper'
 
@@ -22,7 +21,7 @@ export const note = {
           prefer: 'lexical',
         })
 
-        return data.$serialized as NoteWrappedWithLikedAndTranslationPayload
+        return data.$serialized as unknown as NoteWrappedPayload
       },
     }),
 }

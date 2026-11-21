@@ -24,6 +24,7 @@ import { apiClient } from '~/lib/request'
 import { getErrorMessageFromRequestError } from '~/lib/request.shared'
 import { toast } from '~/lib/toast'
 import { useAggregationSelector } from '~/providers/root/aggregation-data-provider'
+import { dataOf } from '~/types/api-compat'
 
 const renderTitle = (text: string) => (
   <h1 className="my-12! text-xl! font-bold">{text}</h1>
@@ -34,7 +35,7 @@ export default function Page() {
   const { data, isLoading } = useQuery({
     queryKey: ['friends'],
     queryFn: async () => {
-      const { data } = await apiClient.link.getAll()
+      const data = dataOf<LinkModel[]>(await apiClient.link.getAll())
       return data
     },
     select: useCallback((data: LinkModel[]) => {
@@ -154,7 +155,7 @@ const Card: FC<{ link: LinkModel }> = ({ link }) => {
     >
       <Avatar
         randomColor
-        imageUrl={link.avatar}
+        imageUrl={link.avatar ?? undefined}
         lazy
         radius={8}
         text={link.name[0]}

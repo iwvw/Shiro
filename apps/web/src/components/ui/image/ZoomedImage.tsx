@@ -463,14 +463,14 @@ const Placeholder: FC<
         backgroundColor: accentColor,
       }}
     >
-      {imageMeta?.blurHash && (
+      {imageMeta?.thumbhash && (
         <Blurhash
           resolutionX={32}
           resolutionY={32}
           punch={1}
           height={scaledSize.scaleHeight}
           width={scaledSize.scaleWidth}
-          hash={imageMeta.blurHash}
+          hash={imageMeta.thumbhash}
         />
       )}
     </span>

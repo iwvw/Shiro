@@ -86,7 +86,7 @@ export function CommentBlockButton({
           title: t('selection_comment'),
           content: (rest) => (
             <CommentModal
-              anchor={anchor}
+              anchor={anchor as unknown as CommentAnchor}
               refId={refId}
               title={title}
               {...rest}

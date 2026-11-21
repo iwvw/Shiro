@@ -1,9 +1,6 @@
 'use client'
 
-import type {
-  Image,
-  NoteWrappedWithLikedAndTranslationPayload,
-} from '@mx-space/api-client'
+import type { Image } from '@mx-space/api-client'
 import { useQueryClient } from '@tanstack/react-query'
 import { clsx } from 'clsx'
 import { useFormatter, useLocale, useTranslations } from 'next-intl'
@@ -24,12 +21,13 @@ import {
   useSetCurrentNoteData,
 } from '~/providers/note/CurrentNoteDataProvider'
 import { queries } from '~/queries/definition'
+import type { NoteWrappedPayload } from '~/types/api-compat'
 
 export const MarkdownSelection: Component = (props) => {
   const id = useCurrentNoteDataSelector((data) => data?.data?.id)!
   const title = useCurrentNoteDataSelector((data) => data?.data?.title)!
   const canComment = useCurrentNoteDataSelector(
-    (data) => data?.data.allowComment,
+    (data) => data?.data.allowComment ?? true,
   )!
   return (
     <WithArticleSelectionAction
@@ -63,7 +61,7 @@ export const NoteTitle = () => {
 }
 
 export const NoteDateMeta = () => {
-  const created = useCurrentNoteDataSelector((data) => data?.data.created)
+  const created = useCurrentNoteDataSelector((data) => data?.data.createdAt)
   const format = useFormatter()
 
   if (!created) return null
@@ -83,8 +81,8 @@ export const NoteDateMeta = () => {
 }
 export const NoteHeaderDate = withClientOnly(() => {
   const date = useCurrentNoteDataSelector((data) => ({
-    created: data?.data.created,
-    modified: data?.data.modified,
+    created: data?.data.createdAt,
+    modified: data?.data.modifiedAt,
   }))
   const format = useFormatter()
   const t = useTranslations('common')
@@ -164,7 +162,7 @@ export const NoteDataReValidate: FC<{ fetchedAt: string }> = withClientOnly(
       queryClient
         .fetchQuery(queries.note.byNid(nid.toString(), null, locale))
         .then((data) => {
-          dataSetter(data as NoteWrappedWithLikedAndTranslationPayload)
+          dataSetter(data as NoteWrappedPayload)
           // toast.info('此文章访问的内容已过期，所以页面数据自动更新了。')
           logger.log('Note data revalidated', data)
         })

@@ -90,7 +90,12 @@ export const GridMarkdownImages: FC<{
 )
 
 const GridZoomImage: FC<{ src: string }> = memo(({ src }) => {
-  const { accent, height, width, blurHash } = useMarkdownImageRecord(src) || {}
+  const {
+    accent,
+    height,
+    width,
+    thumbhash: blurHash,
+  } = useMarkdownImageRecord(src) || {}
   const cropUrl = addImageUrlResizeQuery(src, 600)
   const imageEl = useRef<HTMLImageElement>(null)
   const wGreaterThanH = width && height ? width > height : true

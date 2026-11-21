@@ -1,6 +1,5 @@
 'use client'
 
-import type { NoteWrappedWithLikedAndTranslationPayload } from '@mx-space/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { createModelDataProvider } from 'jojoo/react'
 import { useSearchParams } from 'next/navigation'
@@ -8,6 +7,7 @@ import { useLocale } from 'next-intl'
 import { useEffect } from 'react'
 
 import { queries } from '~/queries/definition'
+import type { NoteWrappedPayload } from '~/types/api-compat'
 
 const {
   ModelDataProvider,
@@ -16,7 +16,7 @@ const {
   setGlobalModelData: setModelData,
   useModelDataSelector,
   useSetModelData,
-} = createModelDataProvider<NoteWrappedWithLikedAndTranslationPayload>()
+} = createModelDataProvider<NoteWrappedPayload>()
 
 export {
   ModelDataAtomProvider as CurrentNoteDataAtomProvider,
@@ -38,7 +38,7 @@ export const SyncNoteDataAfterLoggedIn = () => {
 
   useEffect(() => {
     if (data) {
-      const noteData = data as NoteWrappedWithLikedAndTranslationPayload
+      const noteData = data as NoteWrappedPayload
       setModelData((draft) => {
         draft.data = noteData.data
       })

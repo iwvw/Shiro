@@ -38,7 +38,10 @@ function AvatarStack({
       const key = c.avatar || c.author
       if (!seen.has(key)) {
         seen.add(key)
-        result.push({ avatar: c.avatar, author: c.author })
+        result.push({
+          avatar: c.avatar ?? undefined,
+          author: c.author ?? undefined,
+        })
       }
     }
     return result.slice(0, 3)
@@ -140,7 +143,7 @@ function MobileGutterItem({
         title="评论"
         content={
           <CommentBlockThread
-            anchor={anchor!}
+            anchor={anchor as unknown as CommentAnchor}
             comments={blockComments}
             refId={refId}
           />
@@ -193,7 +196,10 @@ export function CommentBlockGutter({
         map.set(anchor.blockId, arr)
       } else if (anchor.mode === 'range') {
         // Range anchor with matching lang — check if it falls back to block level
-        const resolved = resolveRangeAnchor(anchor, blockInfos)
+        const resolved = resolveRangeAnchor(
+          anchor as unknown as RangeAnchor,
+          blockInfos,
+        )
         if (
           resolved.status === 'block-fallback' &&
           resolved.blockIndex !== -1
@@ -471,7 +477,7 @@ export function CommentBlockGutter({
           style={{ top: `${panelTop}px` }}
         >
           <CommentBlockThread
-            anchor={panelAnchor}
+            anchor={panelAnchor as unknown as CommentAnchor}
             comments={panelComments}
             refId={refId}
             onClose={() => setActivePanel(null)}

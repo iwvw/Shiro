@@ -99,8 +99,8 @@ describe('comment thread helpers', () => {
         {
           data: [root],
           pagination: {
-            currentPage: 1,
-            totalPage: 1,
+            page: 1,
+            totalPages: 1,
             hasPrevPage: false,
             hasNextPage: false,
             size: 10,

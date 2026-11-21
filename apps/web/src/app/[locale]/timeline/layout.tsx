@@ -1,3 +1,4 @@
+import type { TimelineData } from '@mx-space/api-client'
 import { TimelineType } from '@mx-space/api-client'
 import { dehydrate } from '@tanstack/react-query'
 import type { Metadata } from 'next'
@@ -9,6 +10,7 @@ import { SearchFAB } from '~/components/modules/shared/SearchFAB'
 import { getQueryClient } from '~/lib/query-client.server'
 import { apiClient } from '~/lib/request'
 import { definePrerenderPage } from '~/lib/request.server'
+import { dataOf } from '~/types/api-compat'
 
 export const generateMetadata = async (
   props: NextPageParams<{ locale: string }>,
@@ -43,7 +45,7 @@ export default definePrerenderPage<{
             type: nextType,
             year: +(year || 0) || undefined,
           })
-          .then((res) => res.data),
+          .then((res) => dataOf<TimelineData>(res)),
     })
   },
   Component: async (props: PropsWithChildren) => {

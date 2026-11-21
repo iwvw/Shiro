@@ -61,7 +61,9 @@ export const PostTitle = () => {
 export const MarkdownSelection: Component = (props) => {
   const id = useCurrentPostDataSelector((data) => data?.id)!
   const title = useCurrentPostDataSelector((data) => data?.title)!
-  const allowComment = useCurrentPostDataSelector((data) => data?.allowComment)!
+  const allowComment = useCurrentPostDataSelector(
+    (data) => data?.allowComment ?? true,
+  )!
   return (
     <WithArticleSelectionAction
       refId={id}
@@ -92,18 +94,17 @@ export const PostMetaBarInternal: Component = ({ className }) => {
   const meta = useCurrentPostDataSelector((data) => {
     if (!data) return
     return {
-      created: data.created,
+      createdAt: data.createdAt,
       category: data.category,
       tags: data.tags,
-      count: data.count,
-      modified: data.modified,
+      readCount: data.readCount,
+      likeCount: data.likeCount,
+      modifiedAt: data.modifiedAt,
     }
   })
 
   if (!meta) return null
-  return (
-    <PostMetaBar meta={meta} className={className} />
-  )
+  return <PostMetaBar meta={meta} className={className} />
 }
 
 export const PostDataReValidate: FC<{

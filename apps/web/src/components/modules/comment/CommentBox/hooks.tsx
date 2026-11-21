@@ -151,13 +151,13 @@ export const useSendComment = () => {
         author,
         mail,
         avatar,
-        source,
+        source: undefined as unknown as string,
         url,
       }
       if (anchor) commentDto.anchor = anchor
 
       if (isLogged) {
-        delete commentDto.avatar
+        void 0
       }
 
       // Omit empty string key
@@ -174,13 +174,13 @@ export const useSendComment = () => {
             .post<CommentModel>({
               data: {
                 text,
-                source,
+                source: undefined as unknown as string,
               },
             })
             .then(wrappedCompletedCallback)
         } else {
           return apiClient.comment
-            .reply(refId, commentDto)
+            .guestReply(refId, commentDto as never)
             .then(wrappedCompletedCallback)
         }
       }
@@ -215,7 +215,7 @@ export const useSendComment = () => {
       // @ts-ignore
       commentDto.isWhispers = isWhisper
       return apiClient.comment
-        .comment(refId, commentDto)
+        .guestComment(refId, commentDto as never)
         .then(wrappedCompletedCallback)
     },
     mutationKey: [commentRefId, 'comment'],

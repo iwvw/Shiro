@@ -1,6 +1,6 @@
 'use client'
 
-import type { NoteTopicListItem, PaginateResult } from '@mx-space/api-client'
+import type { PaginateResult } from '@mx-space/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { useLocale, useTranslations } from 'next-intl'
 import type { FC } from 'react'
@@ -10,6 +10,7 @@ import { Divider } from '~/components/ui/divider'
 import { FloatPopover } from '~/components/ui/float-popover'
 import { apiClient } from '~/lib/request'
 import { useCurrentNoteDataSelector } from '~/providers/note/CurrentNoteDataProvider'
+import type { NoteTopicListItem } from '~/types/api-compat'
 
 import { NoteTimelineItem } from './NoteTimelineItem'
 import { NoteTopicDetail, ToTopicLink } from './NoteTopicDetail'

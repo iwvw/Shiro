@@ -90,7 +90,7 @@ export function CommentAnchorPopover({
           )}
         >
           <CommentBlockThread
-            anchor={anchor}
+            anchor={anchor as unknown as CommentAnchor}
             comments={comments}
             refId={refId}
             onClose={onClose}

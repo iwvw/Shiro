@@ -1,13 +1,10 @@
-import type {
-  ModelWithLiked,
-  ModelWithTranslation,
-  PostModel,
-} from '@mx-space/api-client'
+import type { PostModel } from '@mx-space/api-client'
 
 import { attachServerFetch } from '~/lib/attach-fetch'
 import { getQueryClient } from '~/lib/query-client.server'
 import { requestErrorHandler } from '~/lib/request.server'
 import { queries } from '~/queries/definition'
+import type { ModelWithLiked, ModelWithTranslation } from '~/types/api-compat'
 
 export interface PageParams extends LocaleParams {
   category: string

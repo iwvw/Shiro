@@ -32,9 +32,9 @@ export type CommentThreadInfiniteData = InfiniteData<
 const toTimestamp = (date: string) => new Date(date).getTime()
 
 const byCreatedAsc = (
-  a: Pick<CommentModel, 'created'>,
-  b: Pick<CommentModel, 'created'>,
-) => toTimestamp(a.created) - toTimestamp(b.created)
+  a: Pick<CommentModel, 'createdAt'>,
+  b: Pick<CommentModel, 'createdAt'>,
+) => toTimestamp(a.createdAt) - toTimestamp(b.createdAt)
 
 const getParentCommentId = (
   parentCommentId: CommentModel['parentCommentId'],
