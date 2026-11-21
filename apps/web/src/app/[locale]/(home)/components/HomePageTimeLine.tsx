@@ -1,5 +1,6 @@
 'use client'
 
+import type { LastYearPublication } from '@mx-space/api-client'
 import { useQuery } from '@tanstack/react-query'
 import { m } from 'motion/react'
 import { useTranslations } from 'next-intl'
@@ -12,6 +13,7 @@ import { Spring } from '~/constants/spring'
 import { Link } from '~/i18n/navigation'
 import { apiClient } from '~/lib/request'
 import { routeBuilder, Routes } from '~/lib/route-builder'
+import { dataOf } from '~/types/api-compat'
 
 type Post = {
   id: string
@@ -98,7 +100,10 @@ export const HomePageTimeLine = () => {
   const t = useTranslations('home')
   const { data: yearData } = useQuery({
     queryKey: ['home-timeline'],
-    queryFn: async () => apiClient.activity.getLastYearPublication(),
+    queryFn: async () =>
+      dataOf<LastYearPublication>(
+        await apiClient.activity.getLastYearPublication(),
+      ),
   })
 
   const { data, month } = useMemo(

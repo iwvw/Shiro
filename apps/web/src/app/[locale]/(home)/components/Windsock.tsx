@@ -23,6 +23,7 @@ import { Link } from '~/i18n/navigation'
 import { preventDefault } from '~/lib/dom'
 import { apiClient } from '~/lib/request'
 import { toast } from '~/lib/toast'
+import { dataOf } from '~/types/api-compat'
 
 export const Windsock = () => {
   const t = useTranslations('common')
@@ -81,7 +82,8 @@ export const Windsock = () => {
   const likeQueryKey = ['site-like']
   const { data: count } = useQuery({
     queryKey: likeQueryKey,
-    queryFn: () => apiClient.proxy('like_this').get(),
+    queryFn: async () =>
+      dataOf<number>(await apiClient.proxy('like_this').get()),
     refetchInterval: 1000 * 60 * 5,
   })
 
@@ -146,7 +148,9 @@ export const Windsock = () => {
               .proxy('like_this')
               .post()
               .then(() => {
-                queryClient.setQueryData(likeQueryKey, (prev: any) => prev + 1)
+                queryClient.setQueryData(likeQueryKey, (prev: any) =>
+                  typeof prev === 'number' ? prev + 1 : prev,
+                )
               })
 
             toast.success(t('thanks'), {
