@@ -202,7 +202,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     { headers },
   )
     .then((res) => res.json())
-    .then((res) => !!res.ok)
+    .then((res) => !!res.data?.ok)
     .catch(() => false)
 
   return (

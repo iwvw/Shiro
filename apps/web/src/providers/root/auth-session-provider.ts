@@ -8,6 +8,7 @@ import { setIsOwnerLogged } from '~/atoms/hooks/owner'
 import { setSessionReader } from '~/atoms/hooks/reader'
 import type { authClient } from '~/lib/authjs'
 import { apiClient } from '~/lib/request'
+import { dataOf } from '~/types/api-compat'
 
 type AdapterUser = typeof authClient.$Infer.Session
 export const AuthSessionProvider: Component = ({ children }) => {
@@ -22,12 +23,14 @@ export const AuthSessionProvider: Component = ({ children }) => {
       }),
   })
   useEffect(() => {
-    if (!session) {
+    // 后端 v3 响应统一包在 { data } 信封里
+    const payload = session ? dataOf<any>(session) : null
+    if (!payload) {
       setIsOwnerLogged(false)
       setSessionReader(null)
       return
     }
-    const transformedData = simpleCamelcaseKeys(session)
+    const transformedData = simpleCamelcaseKeys(payload)
 
     setSessionReader(transformedData)
     if (transformedData.role === 'owner') {
