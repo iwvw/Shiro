@@ -21,10 +21,10 @@ RUN apk update && apk add --no-cache git
 WORKDIR /app
 COPY --from=deps /app/ .
 
-# Reuse pnpm installed in deps stage to avoid network flakiness
-COPY --from=deps /usr/local/lib/node_modules/pnpm /usr/local/lib/node_modules/pnpm
-RUN ln -sf ../lib/node_modules/pnpm/bin/pnpm.cjs /usr/local/bin/pnpm \
-  && ln -sf ../lib/node_modules/pnpm/bin/pnpx.cjs /usr/local/bin/pnpx
+# Ensure pnpm is available in the builder stage.
+# NOTE: the previous approach (copying pnpm from the deps stage + manual symlink)
+# produced a dangling /usr/local/bin/pnpm and failed with `pnpm: not found`.
+RUN npm install -g pnpm@10.27.0
 
 ENV NODE_ENV=production
 ARG BASE_URL
