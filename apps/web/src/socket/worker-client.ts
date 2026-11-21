@@ -32,15 +32,13 @@ class SocketWorker {
   constructor() {
     if (isServerSide) return
 
-    // IMPORTANT:
-    // - Turbopack only recognizes worker bundling for the native `Worker`/`SharedWorker` constructors.
-    // - If we wrap it in a custom polyfill class, Turbopack may treat the URL as a static asset and
-    //   serve it as `.ts` (MPEG TS mime type), which the browser can't execute.
-    // eslint-disable-next-line
-    const workerUrl = new URL('./io.worker.ts', import.meta.url)
-
+    // NOTE: 必须把 `new URL('./io.worker.ts', import.meta.url)` 内联在 Worker
+    // 构造函数里,bundler(webpack)才会把它当作 worker 入口打成 JS chunk。
+    // 若先赋值给变量再传入,会被当作普通静态资源产出 `.ts`(浏览器拒绝执行)。
     const createWorker = (): SocketWorkerTransport => {
-      const w = new Worker(workerUrl, { type: 'module' })
+      const w = new Worker(new URL('io.worker.ts', import.meta.url), {
+        type: 'module',
+      })
       return {
         postMessage: (message) => w.postMessage(message),
         start: () => {},
@@ -59,48 +57,44 @@ class SocketWorker {
       }
     }
 
-    // Turbopack currently may emit the SharedWorker script as a `.ts` static asset
-    // (served as `video/mp2t`), which browsers refuse to execute.
-    // If we detect that output shape, fall back to a dedicated `Worker` (which Turbopack
-    // DOES provide a proper worker loader for).
-    // @see https://github.com/vercel/next.js/issues/74842
-    const seemsLikeUncompiledTsAsset =
-      workerUrl.pathname.endsWith('.ts') || workerUrl.href.endsWith('.ts')
+    const createSharedWorker = (): SocketWorkerTransport => {
+      const sw = new SharedWorker(new URL('io.worker.ts', import.meta.url), {
+        name: 'shiro-ws-worker',
+        type: 'module',
+      })
 
-    const worker: SocketWorkerTransport =
-      'SharedWorker' in window && !seemsLikeUncompiledTsAsset
-        ? (() => {
-            try {
-              const sw = new SharedWorker(workerUrl, {
-                name: 'shiro-ws-worker',
-                type: 'module',
-              })
+      return {
+        postMessage: (message) => sw.port.postMessage(message),
+        start: () => sw.port.start(),
+        get onmessage() {
+          return sw.port.onmessage
+        },
+        set onmessage(value) {
+          sw.port.onmessage = value
+        },
+        get onmessageerror() {
+          return sw.port.onmessageerror
+        },
+        set onmessageerror(value) {
+          sw.port.onmessageerror = value
+        },
+      }
+    }
 
-              return {
-                postMessage: (message) => sw.port.postMessage(message),
-                start: () => sw.port.start(),
-                get onmessage() {
-                  return sw.port.onmessage
-                },
-                set onmessage(value) {
-                  sw.port.onmessage = value
-                },
-                get onmessageerror() {
-                  return sw.port.onmessageerror
-                },
-                set onmessageerror(value) {
-                  sw.port.onmessageerror = value
-                },
-              }
-            } catch (err) {
-              console.warn(
-                '[ws worker] SharedWorker init failed, fallback to Worker',
-                err,
-              )
-              return createWorker()
-            }
-          })()
-        : createWorker()
+    let worker: SocketWorkerTransport
+    if ('SharedWorker' in window) {
+      try {
+        worker = createSharedWorker()
+      } catch (err) {
+        console.warn(
+          '[ws worker] SharedWorker init failed, fallback to Worker',
+          err,
+        )
+        worker = createWorker()
+      }
+    } else {
+      worker = createWorker()
+    }
 
     this.prepare(worker)
     this.worker = worker
