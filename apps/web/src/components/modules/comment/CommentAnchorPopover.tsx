@@ -18,7 +18,7 @@ import { CommentBlockThread } from './CommentBlockThread'
 import type { CommentAnchor, RangeAnchor } from './types'
 
 type CommentWithAnchor = import('@mx-space/api-client').CommentModel & {
-  anchor?: CommentAnchor
+  anchor?: CommentAnchor | null
 }
 
 export function CommentAnchorPopover({

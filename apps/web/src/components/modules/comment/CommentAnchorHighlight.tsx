@@ -10,7 +10,7 @@ import { CommentAnchorPopover } from './CommentAnchorPopover'
 import { useRichContentElement } from './RichContentElementContext'
 import type { CommentAnchor, RangeAnchor } from './types'
 
-type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor }
+type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor | null }
 
 function anchorKey(anchor: RangeAnchor): string {
   return `${anchor.blockId}:${anchor.startOffset}:${anchor.endOffset}`

@@ -192,7 +192,7 @@ const PostPreview = () => {
         ...rawData,
         isTranslated: false,
         liked: false,
-      }) as PostWithTranslation,
+      }) as unknown as PostWithTranslation,
     [rawData],
   )
   const overrideAtom = useMemo(() => atom(null! as PostWithTranslation), [])
@@ -240,10 +240,8 @@ const NotePreview = () => {
           ...rawData,
           created: new Date().toISOString(),
           images: rawData.images ?? [],
-          count: rawData.count ?? {
-            read: 0,
-            like: 0,
-          },
+          readCount: rawData.readCount ?? 0,
+          likeCount: rawData.likeCount ?? 0,
           isTranslated: false,
           liked: false,
         },

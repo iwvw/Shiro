@@ -10,7 +10,7 @@ import type { InfiniteData } from '@tanstack/react-query'
 import type { CommentAnchor } from './types'
 
 export type CommentWithAnchor = CommentModel & {
-  anchor?: CommentAnchor
+  anchor?: CommentAnchor | null
   new?: boolean
 }
 
@@ -20,9 +20,7 @@ export type CommentThreadViewItem = CommentWithAnchor & {
   replyWindow?: CommentReplyWindow
 }
 
-export type CommentThreadPage = PaginateResult<
-  CommentThreadItem & { ref: string }
->
+export type CommentThreadPage = PaginateResult<CommentThreadItem>
 export type CommentThreadInfiniteData = InfiniteData<
   CommentThreadPage & {
     readers?: Record<string, ReaderModel>
@@ -59,7 +57,7 @@ const sortChildrenDeep = (comment: CommentThreadViewItem) => {
 }
 
 export const buildCommentTreeItem = (
-  rootComment: CommentThreadItem | (CommentThreadViewItem & { ref?: string }),
+  rootComment: CommentThreadItem | CommentThreadViewItem,
 ): CommentThreadViewItem => {
   const rootView = createViewComment(rootComment)
   const replyViews = (rootComment.replies ?? []).map((reply) =>
@@ -87,9 +85,7 @@ export const buildCommentTreeItem = (
 }
 
 export const flattenThreadComments = (
-  comments: Array<
-    CommentThreadItem | (CommentThreadViewItem & { ref?: string })
-  >,
+  comments: Array<CommentThreadItem | CommentThreadViewItem>,
 ): CommentWithAnchor[] => {
   const result: CommentWithAnchor[] = []
   for (const comment of comments) {

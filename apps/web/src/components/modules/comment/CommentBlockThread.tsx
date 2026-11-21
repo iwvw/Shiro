@@ -11,7 +11,7 @@ import { ScrollArea } from '~/components/ui/scroll-area'
 import { CommentBoxRoot } from './CommentBox/Root'
 import type { CommentAnchor } from './types'
 
-type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor }
+type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor | null }
 
 interface CommentBlockThreadProps {
   anchor: CommentAnchor

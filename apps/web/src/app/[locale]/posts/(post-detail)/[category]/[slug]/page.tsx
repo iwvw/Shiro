@@ -84,7 +84,11 @@ export const generateMetadata = async (props: {
       canonicalPathNoLocale,
     )
     const supportedLocales = getSupportedLocalesFromTranslations({
-      sourceLang: data.translation?.article?.sourceLang,
+      sourceLang: (
+        data.translation as
+          | { article?: { sourceLang?: string | null } }
+          | undefined
+      )?.article?.sourceLang,
       availableTranslations: (data as any).availableTranslations,
     })
 

@@ -1,5 +1,6 @@
 import type {
   CommentModel,
+  CommentThreadItem,
   PaginateResult,
   ReaderModel,
 } from '@mx-space/api-client'
@@ -47,7 +48,7 @@ export const CommentProvider: FC<{
   refId: string
   children: (
     data: InfiniteData<
-      PaginateResult<CommentModel & { ref: string }> & {
+      PaginateResult<CommentThreadItem> & {
         readers: Record<string, ReaderModel>
       }
     >,

@@ -47,6 +47,7 @@ import {
 import {
   type CommentThreadInfiniteData,
   type CommentThreadViewItem,
+  type CommentWithAnchor,
   mergeThreadRepliesIntoPages,
 } from './thread'
 import type { CommentAnchor } from './types'
@@ -87,7 +88,7 @@ const CommentRender: Component<{
     location,
     isWhispers,
     url,
-    source,
+    authProvider,
   } = comment
 
   const avatar = reader?.image || comment.avatar
@@ -97,11 +98,11 @@ const CommentRender: Component<{
 
   const authorUrl = useMemo(() => {
     if (url) return url
-    if (source === 'github' && reader?.handle) {
+    if (authProvider === 'github' && reader?.handle) {
       return `https://github.com/${reader.handle}`
     }
     return null
-  }, [url, source, reader?.handle])
+  }, [url, authProvider, reader?.handle])
 
   const authorElement = authorUrl ? (
     <a
@@ -184,17 +185,19 @@ const CommentRender: Component<{
               )}
             >
               <Avatar
-                alt={t('avatar_alt', { author })}
+                alt={t('avatar_alt', { author: author ?? '' })}
                 className="size-6 select-none rounded-full bg-neutral-200 ring-2 ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-800 md:size-9"
                 imageUrl={avatar ?? undefined}
                 shadow={false}
               />
-              {source &&
-                !!getStrategyIconComponent(source as AuthSocialProviders) && (
+              {authProvider &&
+                !!getStrategyIconComponent(
+                  authProvider as AuthSocialProviders,
+                ) && (
                   <div className="center absolute -right-1.5 bottom-1 flex size-3.5 rounded-full bg-neutral-50 ring-[1.5px] ring-neutral-200 dark:bg-neutral-800 dark:ring-neutral-950">
                     <UserAuthStrategyIcon
                       className="size-3"
-                      strategy={source as AuthSocialProviders}
+                      strategy={authProvider as AuthSocialProviders}
                     />
                   </div>
                 )}

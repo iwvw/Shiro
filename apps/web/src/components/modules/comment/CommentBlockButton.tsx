@@ -9,6 +9,7 @@ import { CommentModal } from '../shared/CommentModal'
 import type { BlockInfo } from './anchor-utils'
 import { buildBlockAnchorFromIndex } from './anchor-utils'
 import { useRichContentElement } from './RichContentElementContext'
+import type { CommentAnchor } from './types'
 
 export function CommentBlockButton({
   containerRef,

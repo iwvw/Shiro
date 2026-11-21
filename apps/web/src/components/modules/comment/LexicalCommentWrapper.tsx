@@ -21,10 +21,8 @@ import { RichContentElementProvider } from './RichContentElementContext'
 import { flattenThreadComments } from './thread'
 import type { CommentAnchor } from './types'
 
-type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor }
-type CommentsQueryData = InfiniteData<
-  PaginateResult<CommentThreadItem & { anchor?: CommentAnchor; ref: string }>
->
+type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor | null }
+type CommentsQueryData = InfiniteData<PaginateResult<CommentThreadItem>>
 
 function useAnchorCommentsQuery(refId: string): CommentWithAnchor[] {
   const { data } = useQuery({
@@ -32,11 +30,7 @@ function useAnchorCommentsQuery(refId: string): CommentWithAnchor[] {
     queryFn: async () => {
       const data = await apiClient.comment.proxy
         .ref(refId)
-        .get<
-          PaginateResult<
-            CommentThreadItem & { anchor?: CommentAnchor; ref: string }
-          >
-        >({
+        .get<PaginateResult<CommentThreadItem>>({
           params: { hasAnchor: 'true', size: 50 },
         })
 

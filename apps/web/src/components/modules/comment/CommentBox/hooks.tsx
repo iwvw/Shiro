@@ -151,7 +151,6 @@ export const useSendComment = () => {
         author,
         mail,
         avatar,
-        source: undefined as unknown as string,
         url,
       }
       if (anchor) commentDto.anchor = anchor

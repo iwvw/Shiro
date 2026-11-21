@@ -1,6 +1,7 @@
 'use client'
 
-import type { Image } from '@mx-space/api-client'
+import type { Image, PageModel } from '@mx-space/api-client'
+import { useQuery } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import type { PropsWithChildren } from 'react'
 import { Fragment, useMemo } from 'react'
@@ -10,9 +11,9 @@ import { GoToAdminEditingButton } from '~/components/modules/shared/GoToAdminEdi
 import { WithArticleSelectionAction } from '~/components/modules/shared/WithArticleSelectionAction'
 import { Link } from '~/i18n/navigation'
 import { noopArr } from '~/lib/noop'
+import { apiClient } from '~/lib/request'
 import { MarkdownImageRecordProvider } from '~/providers/article/MarkdownImageRecordProvider'
 import { useCurrentPageDataSelector } from '~/providers/page/CurrentPageDataProvider'
-import { useAggregationSelector } from '~/providers/root/aggregation-data-provider'
 
 import FullPageLoading from '../loading'
 
@@ -72,8 +73,17 @@ export const PageTitle = () => {
 export const PagePaginator = () => {
   const t = useTranslations('note')
   const currentPageTitle = useCurrentPageDataSelector((d) => d?.title)
-  const pageMeta = useAggregationSelector((d) => d.pageMeta)
-  const pages = useMemo(() => pageMeta || [], [pageMeta])
+  const { data: pageMeta } = useQuery({
+    queryKey: ['page-meta-list'],
+    queryFn: async () => (await apiClient.page.getList(1, 100)).data,
+  })
+  const pages = useMemo(
+    () =>
+      [...((pageMeta as PageModel[] | undefined) || [])].sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0),
+      ),
+    [pageMeta],
+  )
   const indexInPages = pages.findIndex(
     (i: { title: string }) => i.title === currentPageTitle,
   )

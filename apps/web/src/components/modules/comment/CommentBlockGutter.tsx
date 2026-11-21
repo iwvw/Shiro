@@ -12,9 +12,9 @@ import type { BlockInfo } from './anchor-utils'
 import { buildBlockAnchorFromIndex } from './anchor-utils'
 import { CommentBlockThread } from './CommentBlockThread'
 import { useRichContentElement } from './RichContentElementContext'
-import type { CommentAnchor } from './types'
+import type { CommentAnchor, RangeAnchor } from './types'
 
-type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor }
+type CommentWithAnchor = CommentModel & { anchor?: CommentAnchor | null }
 
 interface CommentBlockGutterProps {
   blockInfos: BlockInfo[]
@@ -33,9 +33,9 @@ function AvatarStack({
 }) {
   const uniqueAvatars = useMemo(() => {
     const seen = new Set<string>()
-    const result: { avatar?: string; author: string }[] = []
+    const result: { avatar?: string; author?: string }[] = []
     for (const c of comments) {
-      const key = c.avatar || c.author
+      const key = c.avatar || c.author || ''
       if (!seen.has(key)) {
         seen.add(key)
         result.push({
@@ -53,7 +53,7 @@ function AvatarStack({
         <Avatar
           className="rounded-full ring-2 ring-neutral-50 dark:ring-neutral-900"
           imageUrl={u.avatar}
-          key={u.avatar || u.author}
+          key={u.avatar || u.author || ''}
           radius="full"
           shadow={false}
           size={size}

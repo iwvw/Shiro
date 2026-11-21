@@ -1,11 +1,11 @@
 'use client'
 
+import type { PageModel } from '@mx-space/api-client'
+import { useQuery } from '@tanstack/react-query'
 import { createContext, use, useEffect, useMemo, useState } from 'react'
 
-import {
-  useAggregationSelector,
-  useAppConfigSelector,
-} from '~/providers/root/aggregation-data-provider'
+import { apiClient } from '~/lib/request'
+import { useAppConfigSelector } from '~/providers/root/aggregation-data-provider'
 
 import type { IHeaderMenu } from '../config'
 import { headerMenuConfig as baseHeaderMenuConfig } from '../config'
@@ -28,8 +28,18 @@ const cloneHeaderMenuConfig = (items: IHeaderMenu[]): IHeaderMenu[] =>
   }))
 
 export const HeaderDataConfigureProvider: Component = ({ children }) => {
-  const pageMeta = useAggregationSelector(
-    (aggregationData) => aggregationData.pageMeta,
+  const { data: pageData } = useQuery({
+    queryKey: ['page-meta-list'],
+    queryFn: async () => (await apiClient.page.getList(1, 100)).data,
+  })
+  const pageMeta = useMemo(
+    () =>
+      pageData
+        ? ([...pageData] as PageModel[]).sort(
+            (a, b) => (a.order ?? 0) - (b.order ?? 0),
+          )
+        : undefined,
+    [pageData],
   )
   const postListViewMode = useAppConfigSelector(
     (appConfig) => appConfig.module?.posts?.mode,
