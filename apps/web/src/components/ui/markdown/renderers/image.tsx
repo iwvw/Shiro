@@ -7,7 +7,7 @@ import { Blurhash } from 'react-blurhash'
 import { PhotoProvider, PhotoView } from 'react-photo-view'
 
 import { LazyLoad } from '~/components/common/Lazyload'
-import { addImageUrlResizeQuery } from '~/lib/image'
+import { addImageUrlResizeQuery, isValidBlurhash } from '~/lib/image'
 import { isVideoExt } from '~/lib/mine-type'
 import { useMarkdownImageRecord } from '~/providers/article/MarkdownImageRecordProvider'
 import {
@@ -109,7 +109,7 @@ const GridZoomImage: FC<{ src: string }> = memo(({ src }) => {
         backgroundColor: accent,
       }}
     >
-      {!!blurHash && (
+      {isValidBlurhash(blurHash) && (
         <Blurhash
           hash={blurHash}
           resolutionX={32}

@@ -1,6 +1,15 @@
-import { encode } from 'blurhash'
+import { encode, isBlurhashValid as _isBlurhashValid } from 'blurhash'
 
 import { TENCENT_CDN_DOMAIN } from '~/app.static.config'
+
+/**
+ * MX Space v18 图片 meta 里存的是 **thumbhash**(`rgbaToThumbHash`,不是 blurhash)。
+ * 直接把它喂给 `react-blurhash` 会抛 `ValidationError: blurhash length mismatch`
+ * 并触发文章级 ErrorBoundary(整篇博文显示“渲染出错”)。这里只在确实是合法
+ * blurhash 时才渲染占位图,避免坏数据把页面打崩。
+ */
+export const isValidBlurhash = (value?: string | null): value is string =>
+  !!value && _isBlurhashValid(value).result
 
 export const calculateDimensions = ({
   width,

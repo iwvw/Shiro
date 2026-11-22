@@ -35,7 +35,7 @@ import { LazyLoad } from '~/components/common/Lazyload'
 import { useIsUnMounted } from '~/hooks/common/use-is-unmounted'
 import { isDev, isServerSide } from '~/lib/env'
 import { clsxm } from '~/lib/helper'
-import { calculateDimensions } from '~/lib/image'
+import { calculateDimensions, isValidBlurhash } from '~/lib/image'
 import { useMarkdownImageRecord } from '~/providers/article/MarkdownImageRecordProvider'
 
 import { Divider } from '../divider'
@@ -418,6 +418,8 @@ const Placeholder: FC<
 }) => {
   const imageMeta = useMarkdownImageRecord(src)
   const accentColor = accent || imageMeta?.accent
+  // thumbhash 不是 blurhash,必须校验,否则 react-blurhash 抛错并打崩文章级 ErrorBoundary
+  const thumbhash = imageMeta?.thumbhash
 
   const scaledSize = useMemo(() => {
     let nextHeight = manualHeight
@@ -463,14 +465,14 @@ const Placeholder: FC<
         backgroundColor: accentColor,
       }}
     >
-      {imageMeta?.thumbhash && (
+      {isValidBlurhash(thumbhash) && (
         <Blurhash
           resolutionX={32}
           resolutionY={32}
           punch={1}
           height={scaledSize.scaleHeight}
           width={scaledSize.scaleWidth}
-          hash={imageMeta.thumbhash}
+          hash={thumbhash}
         />
       )}
     </span>
