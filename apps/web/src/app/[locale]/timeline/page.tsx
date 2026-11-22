@@ -9,6 +9,7 @@ import { useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { memo, useEffect } from 'react'
 
+import { ClientOnly } from '~/components/common/ClientOnly'
 import { SolidBookmark } from '~/components/icons/bookmark'
 import { NormalContainer } from '~/components/layout/container/Normal'
 import { PeekLink } from '~/components/modules/peek/PeekLink'
@@ -240,10 +241,16 @@ const Item = memo<{
     >
       <span className="flex min-w-0 shrink items-center">
         <span className="mr-2 inline-block w-12 tabular-nums">
-          {Intl.DateTimeFormat('en-us', {
-            month: '2-digit',
-            day: '2-digit',
-          }).format(item.date)}
+          {/* `Intl.DateTimeFormat` defaults to the runtime timezone, so the SSR
+          server (UTC) and the reader's browser format the same instant to
+          different calendar days, causing a hydration mismatch. Render it
+          client-only so both sides agree and the reader still sees local time. */}
+          <ClientOnly>
+            {Intl.DateTimeFormat('en-us', {
+              month: '2-digit',
+              day: '2-digit',
+            }).format(item.date)}
+          </ClientOnly>
         </span>
         <PeekLink href={item.href} className="min-w-0 truncate leading-6">
           <span className="min-w-0 truncate">{item.title}</span>
